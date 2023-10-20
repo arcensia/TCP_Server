@@ -36,11 +36,9 @@ db = DatabaseManager(config_data['db'])
 db.open_session()
 
 try:
-
     # TCP서버 실행
     activate_server(dbconn=db.session, tcp_host=tcp_host, tcp_port=tcp_port)
     # activate_server(dbconn=db.session, tcp_host='localhost', tcp_port=1900)
-
 except Exception as e:
     logging.warning(e)
 finally:

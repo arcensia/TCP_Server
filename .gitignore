@@ -1,0 +1,10 @@
+
+# pyCharm
+.idea/
+
+# pyinstaller
+build/
+dist/
+
+# protocol
+TCP/protocol.py
