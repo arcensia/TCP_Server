@@ -1,4 +1,6 @@
+# python = 3.10.4
 from DB.DataBaseManager import DatabaseManager
+from kafka.kafka_manager import kafka_manager
 from datetime import datetime
 from TCP.TCP_Server import activate_server
 
@@ -31,21 +33,24 @@ logging.basicConfig(
 ## tcp 서버 설정
 tcp_host = config_data['tcp']['ip']
 tcp_port = config_data['tcp']['port']
-# DB연결
-db = DatabaseManager(config_data['db'])
-db.open_session()
 
-try:
-    # TCP서버 실행
-    activate_server(dbconn=db.session, tcp_host=tcp_host, tcp_port=tcp_port)
-    # activate_server(dbconn=db.session, tcp_host='localhost', tcp_port=1900)
-except Exception as e:
-    logging.warning(e)
-finally:
-    SERVER_RUNNING = False
-    db.close_session()
+# # DB연결
+# db = DatabaseManager(config_data['db'])
+# db.open_session()
 
+activate_server(tcp_host=tcp_host, tcp_port=tcp_port)
+
+# try:
+#     # TCP서버 실행
+#     activate_server(tcp_host=tcp_host, tcp_port=tcp_port)
+# except Exception as e:
+#     logging.warning(e)
+# finally:
+#     SERVER_RUNNING = False
+
+# db.close_session()
 logging.info("Close Program")
 sys.exit(0)
-    # sc create TCPIFTEST binPath= "D:\tcp server\dist\tcpServer.exe"
+
+# sc create TCPIFTEST binPath= "D:\tcp server\dist\tcpServer.exe"
 # C:\Users\zxckl\OneDrive\바탕 화면\work\개발\GetData_source\server\TCP\test\dist\tcpServer

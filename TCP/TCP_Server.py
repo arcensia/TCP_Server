@@ -2,21 +2,22 @@ import socket
 import threading
 import logging
 from TCP import protocol
-
+from kafka import kafka_manager
 # 클라이언트 연결에 타임아웃 설정
 global TCP_TIMEOUT_SECONDS
 global IS_SEND_DATA
 global SERVER_RUNNING
 
 CLIENTS = {}
-
 from TCP.cmd_service import Cmd_Service
-def handle_client(conn, client_addr, session):
+
+is_now_used = {}
+def handle_client(conn, client_addr):
     global IS_SEND_DATA
     global SERVER_RUNNING
     client_ip = client_addr[0]
     client_data = CLIENTS[client_ip]['data']
-    service = Cmd_Service(session)  # 서비스
+    service = Cmd_Service()  # 서비스
     conn.settimeout(TCP_TIMEOUT_SECONDS)
 
     try:
@@ -37,10 +38,12 @@ def handle_client(conn, client_addr, session):
                 client_data.set_pressure_data(p_data)
                 CLIENTS[client_ip]['data'] = client_data
 
+                service.send_message(client_data.get_all_data())
             if cmd == 2:
-                # # 사용처가 불분명하므로 주석처리
-                # protocol.cmd_two(data, client_ip)
                 pass
+                # is_used = protocol.cmd_two(data)
+                # CLIENTS[client_ip]['is_used'] = is_used
+                # service.send_message()
 
             service.send_query()
             #### Data 전송 END###
@@ -56,18 +59,19 @@ def handle_client(conn, client_addr, session):
             logging.info(f"Connection with {client_ip} closed.")
 
 
-def activate_server(dbconn, tcp_host='localhost', tcp_port=1900):
+def activate_server(tcp_host='localhost', tcp_port=1900):
     """
     TCP 서버 실행
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         TCP_server_open()
         s.bind((tcp_host, tcp_port))
+        logging.info("TCP Server Open")
         try:
             s.listen()
-            logging.info("TCP Server Open")
             while SERVER_RUNNING:
                 client_sock, client_address = s.accept()
+
                 client_ip = client_address[0]
                 client_data = Data()
                 if client_ip in CLIENTS:
@@ -81,7 +85,7 @@ def activate_server(dbconn, tcp_host='localhost', tcp_port=1900):
                     logging.info(f"Disconnected by {client_address[0]}")
                 logging.info(f"Connected by {client_address}")
 
-                client_thread = threading.Thread(target=handle_client, args=(client_sock, client_address, dbconn))
+                client_thread = threading.Thread(target=handle_client, args=(client_sock, client_address))
                 CLIENTS[client_ip] = {
                     'socket': client_sock,
                     'data': client_data,
@@ -90,10 +94,10 @@ def activate_server(dbconn, tcp_host='localhost', tcp_port=1900):
                 }
                 client_thread.start()
 
-        except Exception as e:
-            logging.ERROR(e)
         except KeyboardInterrupt:
             print("서버를 종료합니다.")
+        except Exception as e:
+            logging.error(e)
         finally:
             s.close()
             TCP_server_close()

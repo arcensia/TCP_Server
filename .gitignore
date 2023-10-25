@@ -4,7 +4,10 @@
 # pyinstaller
 build/
 dist/
+venv/
 
 
-DB/DB_info.py
+DB/
+#DB/DB_info.py
 TCP/protocol.py
+kafka/kafka_info.py

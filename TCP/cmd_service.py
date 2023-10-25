@@ -2,14 +2,20 @@ import logging
 from datetime import datetime
 from sqlalchemy import text
 from TCP.TCP_Server import CLIENTS
-
+from kafka.kafka_manager import kafka_manager
+from DB.DataBaseManager import DatabaseManager
+import json
 class Cmd_Service:
-    def __init__(self, conn):
-        self.conn = conn
+    def __init__(self):
+        self.conn = DatabaseManager
+        self.kfk = kafka_manager()
+    def send_message(self, message):
+        str_message = json.dumps(message)
+        self.kfk.send_message(str_message)
+
 
     def send_query(self):
         global IS_SEND_DATA
-
         #### 각 쓰레드로부터 쌓인 address별 CLIENTS에 담긴 data들을 5분마다 한번씩 Data 전송 ###
         now = datetime.now()
         closest_5_minute = (now.minute // 5) * 5
