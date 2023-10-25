@@ -2,7 +2,7 @@ import socket
 import threading
 import logging
 from TCP import protocol
-from kafka import kafka_manager
+from kafka_manager import kafka_manager
 # 클라이언트 연결에 타임아웃 설정
 global TCP_TIMEOUT_SECONDS
 global IS_SEND_DATA
@@ -37,8 +37,7 @@ def handle_client(conn, client_addr):
                 client_data.set_flow_data(f_data)
                 client_data.set_pressure_data(p_data)
                 CLIENTS[client_ip]['data'] = client_data
-
-                service.send_message(client_data.get_all_data())
+                service.send_message(client_data)
             if cmd == 2:
                 pass
                 # is_used = protocol.cmd_two(data)

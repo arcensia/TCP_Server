@@ -1,6 +1,6 @@
 # python = 3.10.4
 from DB.DataBaseManager import DatabaseManager
-from kafka.kafka_manager import kafka_manager
+from kafka_manager.kafka_manager import kafka_manager
 from datetime import datetime
 from TCP.TCP_Server import activate_server
 

@@ -2,17 +2,18 @@ import logging
 from datetime import datetime
 from sqlalchemy import text
 from TCP.TCP_Server import CLIENTS
-from kafka.kafka_manager import kafka_manager
+from kafka_manager.kafka_manager import kafka_manager
 from DB.DataBaseManager import DatabaseManager
 import json
+
+
 class Cmd_Service:
     def __init__(self):
         self.conn = DatabaseManager
         self.kfk = kafka_manager()
-    def send_message(self, message):
-        str_message = json.dumps(message)
-        self.kfk.send_message(str_message)
 
+    def send_message(self, client_data):
+        self.kfk.send_tcp_message(client_data)
 
     def send_query(self):
         global IS_SEND_DATA

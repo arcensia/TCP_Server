@@ -1,11 +1,11 @@
 import time
 
 from confluent_kafka import Producer
-from kafka.kafka_info import HOST, PORT
+from kafka_manager.kafka_info import HOST, PORT
 import logging
 
 """
-kafka 메시지 전송 전략
+kafka_manager 메시지 전송 전략
 전송데이터 목록
 1. ip별 data전송 (ex CLIENTS)
 2. Log
@@ -20,7 +20,7 @@ KAFKA_SERVER = HOST + ":" + str(PORT)
 class kafka_manager:
     def __init__(self):
         self.producer = self.connect_to_kafka_broker(KAFKA_SERVER)
-        logging.info("open kafka Producer")
+        logging.info("open kafka_manager Producer")
 
     def delivery_report(self, err, msg):
         """
@@ -30,15 +30,20 @@ class kafka_manager:
         :return: isMessage
         """
         if err is not None:
-            logging.info('kafka 메시지 전송 실패: {}'.format(err))
+            logging.info('kafka_manager 메시지 전송 실패: {}'.format(err))
             pass
         else:
             pass
             # print('메시지 전송 성공: {}'.format(msg.value()))
 
-    def send_message(self, message):
+    def send_tcp_message(self, client_data):
         topic = 'tcp-data'
-        self.producer.produce(topic, value=str(message), callback=self.delivery_report)
+        value = {
+            "electricity_data": client_data.electricity_data,
+            "flow_data": client_data.flow_data,
+            "pressure_Data": client_data.pressure_Data
+        }
+        self.producer.produce(topic, value=str(value), callback=self.delivery_report)
         self.producer.flush()
 
     def send_log(self, message):
