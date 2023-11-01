@@ -15,6 +15,7 @@ is_now_used = {}
 def handle_client(conn, client_addr):
     global IS_SEND_DATA
     global SERVER_RUNNING
+
     client_ip = client_addr[0]
     client_data = CLIENTS[client_ip]['data']
     service = Cmd_Service()  # 서비스
@@ -44,7 +45,7 @@ def handle_client(conn, client_addr):
                 # CLIENTS[client_ip]['is_used'] = is_used
                 # service.send_message()
 
-            service.send_query()
+            # service.send_message()
             #### Data 전송 END###
 
     except socket.timeout:

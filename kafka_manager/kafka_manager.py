@@ -4,6 +4,7 @@ from confluent_kafka import Producer
 from kafka_manager.kafka_info import HOST, PORT
 import logging
 
+import json
 """
 kafka_manager 메시지 전송 전략
 전송데이터 목록
@@ -43,7 +44,8 @@ class kafka_manager:
             "flow_data": client_data.flow_data,
             "pressure_Data": client_data.pressure_Data
         }
-        self.producer.produce(topic, value=str(value), callback=self.delivery_report)
+        json_value = json.dumps(value)
+        self.producer.produce(topic, value=json_value, callback=self.delivery_report)
         self.producer.flush()
 
     def send_log(self, message):
@@ -63,7 +65,8 @@ class kafka_manager:
                 # 카프카 프로듀서 초기화
                 producer = Producer({
                     'bootstrap.servers': bootstrap_servers,
-                    'client.id': 'python-producer'
+                    'client.id': 'python-client_flask_server'
+                    # 'client.id': 'python-producer'
                 })
                 return producer
             except Exception as e:
@@ -71,6 +74,27 @@ class kafka_manager:
                 print('Error connecting to Kafka, Retrying in 1 second...')
                 time.sleep(1)
 
+    def reconnect(self):
+        # Kafka 연결 재시도 메서드
+        if self.producer is not None:
+            self.producer.close()
+            self.producer = None
+            logging.info("Disconnected from Kafka")
+
+        while self.producer is None:
+            try:
+                # 카프카 프로듀서 초기화
+                self.producer = Producer({
+                    'bootstrap.servers': KAFKA_SERVER,
+                    'client.id': 'python-client_flask_server'
+                })
+                logging.info("Reconnected to Kafka")
+            except Exception as e:
+                logging.info(f'Error connecting to Kafka: {str(e)}')
+                print('Error connecting to Kafka, Retrying in 1 second...')
+                time.sleep(1)
+    def is_connected(self):
+        return self.producer is not None
 
 if __name__ == '__main__':
     kfk = kafka_manager()

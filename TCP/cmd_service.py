@@ -36,7 +36,6 @@ class Cmd_Service:
                         # print(i)
                     logging.info("Send Query")
                     data_master.clean()
-
         else:
             IS_SEND_DATA = True
 

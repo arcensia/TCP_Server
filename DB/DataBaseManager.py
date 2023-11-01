@@ -4,9 +4,11 @@ from urllib.parse import quote_plus
 import logging
 from DB.DB_info import db_info
 
+isDatabase = False
+
 
 class DatabaseManager(db_info):
-    def __init__(self, db_config):
+    def __init__(self, db_config=None):
         super().__init__()
         self.connection = None
         self.session = None
@@ -20,15 +22,17 @@ class DatabaseManager(db_info):
     def set_url(self):
         db_info = self.config
         try:
-            # DB 연결설정
-            host = db_info['ip']
-            database = db_info['name']
-            username = self.username
-            password = self.password
-            self.db_type = db_info['type']
-            encoded_password = quote_plus(password)
-            self.url = f"{username}:{encoded_password}@{host}/{database}"
-
+            if db_info is None:
+                # DB 연결설정
+                host = db_info['ip']
+                database = db_info['name']
+                username = self.username
+                password = self.password
+                self.db_type = db_info['type']
+                encoded_password = quote_plus(password)
+                self.url = f"{username}:{encoded_password}@{host}/{database}"
+            else:
+                self.url = None
         except Exception as e:
             raise ValueError(f"Failed to load configuration: {e}")
 

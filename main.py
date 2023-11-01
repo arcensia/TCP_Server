@@ -1,5 +1,4 @@
 # python = 3.10.4
-from DB.DataBaseManager import DatabaseManager
 from kafka_manager.kafka_manager import kafka_manager
 from datetime import datetime
 from TCP.TCP_Server import activate_server
@@ -9,18 +8,23 @@ import sys
 import logging
 import yaml
 
-### DB연결 정보 불러오기 ###
-root = 'C:/TCP'
-config_root = root + '/config.yml'
-with open(config_root, 'r', encoding='UTF-8') as config_file:
-    config_data = yaml.load(config_file, Loader=yaml.FullLoader)
-    set_location = config_data['profiles']['active']
-    config_data = config_data[set_location]
+# ### DB연결 정보 불러오기 ###
+# root = 'C:/TCP'
+# config_root = root + '/config.yml'
+# with open(config_root, 'r', encoding='UTF-8') as config_file:
+#     config_data = yaml.load(config_file, Loader=yaml.FullLoader)
+#     set_location = config_data['profiles']['active']
+#     config_data = config_data[set_location]
 
-### log작성 config설정 ###
-log_directory = os.path.join(root, 'log')
-if not os.path.exists(log_directory):  # log폴더가 없을경우 생성
-    os.makedirs(log_directory)
+# ### log작성 config설정 ###
+# log_directory = os.path.join(root, 'log')
+# if not os.path.exists(log_directory):  # log폴더가 없을경우 생성
+#     os.makedirs(log_directory)
+
+
+#mac
+log_directory= './'
+
 now = datetime.now()
 formatted_time = now.strftime("%Y-%m-%d")
 logging.basicConfig(
@@ -30,9 +34,12 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 
-## tcp 서버 설정
-tcp_host = config_data['tcp']['ip']
-tcp_port = config_data['tcp']['port']
+# ## tcp 서버 설정
+# tcp_host = config_data['tcp']['ip']
+# tcp_port = config_data['tcp']['port']
+
+tcp_host = 'localhost'
+tcp_port = 19100
 
 # # DB연결
 # db = DatabaseManager(config_data['db'])
