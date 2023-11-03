@@ -37,14 +37,14 @@ class kafka_manager:
             pass
             # print('메시지 전송 성공: {}'.format(msg.value()))
 
-    def send_tcp_message(self, client_data):
+    def send_tcp_message(self, msg):
         topic = 'tcp-data'
-        value = {
-            "electricity_data": client_data.electricity_data,
-            "flow_data": client_data.flow_data,
-            "pressure_Data": client_data.pressure_Data
-        }
-        json_value = json.dumps(value)
+        # value = {
+        #     "electricity_data": client_data.electricity_data,
+        #     "flow_data": client_data.flow_data,
+        #     "pressure_Data": client_data.pressure_Data
+        # }
+        json_value = json.dumps(msg)
         self.producer.produce(topic, value=json_value, callback=self.delivery_report)
         self.producer.flush()
 

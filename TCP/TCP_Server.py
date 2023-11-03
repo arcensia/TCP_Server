@@ -2,23 +2,21 @@ import socket
 import threading
 import logging
 from TCP import protocol
-from kafka_manager import kafka_manager
+from datetime import datetime
+
 # 클라이언트 연결에 타임아웃 설정
 global TCP_TIMEOUT_SECONDS
 global IS_SEND_DATA
 global SERVER_RUNNING
-
 CLIENTS = {}
-from TCP.cmd_service import Cmd_Service
 
-is_now_used = {}
+
 def handle_client(conn, client_addr):
     global IS_SEND_DATA
     global SERVER_RUNNING
 
     client_ip = client_addr[0]
     client_data = CLIENTS[client_ip]['data']
-    service = Cmd_Service()  # 서비스
     conn.settimeout(TCP_TIMEOUT_SECONDS)
 
     try:
@@ -38,7 +36,6 @@ def handle_client(conn, client_addr):
                 client_data.set_flow_data(f_data)
                 client_data.set_pressure_data(p_data)
                 CLIENTS[client_ip]['data'] = client_data
-                service.send_message(client_data)
             if cmd == 2:
                 pass
                 # is_used = protocol.cmd_two(data)
@@ -94,13 +91,21 @@ def activate_server(tcp_host='localhost', tcp_port=1900):
                 }
                 client_thread.start()
 
+
+
+
+
         except KeyboardInterrupt:
             print("서버를 종료합니다.")
         except Exception as e:
             logging.error(e)
         finally:
+            for client in CLIENTS:
+                client['thread'].join()
             s.close()
+
             TCP_server_close()
+
             logging.info("Server shutdown")
 
 
@@ -108,7 +113,7 @@ def TCP_server_open():
     global TCP_TIMEOUT_SECONDS
     global SERVER_RUNNING
     global IS_SEND_DATA
-    TCP_TIMEOUT_SECONDS = 60*5
+    TCP_TIMEOUT_SECONDS = 60 * 5
     SERVER_RUNNING = True
     IS_SEND_DATA = True
 
