@@ -2,7 +2,6 @@ import socket
 import threading
 import logging
 from TCP import protocol
-from datetime import datetime
 
 # 클라이언트 연결에 타임아웃 설정
 global TCP_TIMEOUT_SECONDS
@@ -83,6 +82,7 @@ def activate_server(tcp_host='localhost', tcp_port=1900):
                 logging.info(f"Connected by {client_address}")
 
                 client_thread = threading.Thread(target=handle_client, args=(client_sock, client_address))
+                client_thread.daemon = True
                 CLIENTS[client_ip] = {
                     'socket': client_sock,
                     'data': client_data,
@@ -90,10 +90,6 @@ def activate_server(tcp_host='localhost', tcp_port=1900):
                     'running': True
                 }
                 client_thread.start()
-
-
-
-
 
         except KeyboardInterrupt:
             print("서버를 종료합니다.")
@@ -158,3 +154,7 @@ class Data:
         self.electricity_data = []
         self.flow_data = []
         self.pressure_Data = []
+
+
+if __name__ == "__main__":
+    activate_server(tcp_host='localhost', tcp_port=1900)

@@ -1,10 +1,10 @@
-import time
-
 from confluent_kafka import Producer
 from kafka_manager.kafka_info import HOST, PORT
 import logging
+import time
 
 import json
+
 """
 kafka_manager 메시지 전송 전략
 전송데이터 목록
@@ -12,16 +12,24 @@ kafka_manager 메시지 전송 전략
 2. Log
     - TCP_Server State 전송 
     - TCP_Server에 연결된 Client리스트 연결 상태 전송
-    - 또 뭐가 필요하지?
 """
 
 KAFKA_SERVER = HOST + ":" + str(PORT)
 
 
 class kafka_manager:
+
     def __init__(self):
+        # self.producer = Producer({
+        #             'bootstrap.servers': KAFKA_SERVER, #카프카 서버 주소
+        #             'client.id': 'python-client_flask_server'
+        #             # 'client.id': 'python-producer'
+        #
+        #             ,'acks': 'all',  # 모든 복제본이 메시지를 성공적으로 저장할 때까지 재시도
+        #             'retries': 3,  # 메시지 전송 재시도 횟수
+        #             'retry.backoff.ms': 100  # 재시도 간격 (밀리초)
+        #         })
         self.producer = self.connect_to_kafka_broker(KAFKA_SERVER)
-        logging.info("open kafka_manager Producer")
 
     def delivery_report(self, err, msg):
         """
@@ -32,7 +40,6 @@ class kafka_manager:
         """
         if err is not None:
             logging.info('kafka_manager 메시지 전송 실패: {}'.format(err))
-            pass
         else:
             pass
             # print('메시지 전송 성공: {}'.format(msg.value()))
@@ -64,11 +71,21 @@ class kafka_manager:
             try:
                 # 카프카 프로듀서 초기화
                 producer = Producer({
-                    'bootstrap.servers': bootstrap_servers,
+                    'bootstrap.servers': bootstrap_servers,# 카프카 서버 주소
                     'client.id': 'python-client_flask_server'
                     # 'client.id': 'python-producer'
+
+                    # , 'acks': 'all',  # 모든 복제본이 메시지를 성공적으로 저장할 때까지 재시도
+                    # 'retries': 3,  # 메시지 전송 재시도 횟수
+                    # 'retry.backoff.ms': 100  # 재시도 간격 (밀리초)
                 })
+                # producer.poll(0)
+                # if producer.error():
+                #     print(f"Error: {producer.error()}")
+                # else:
+                #     logging.info("open kafka_manager Producer")
                 return producer
+
             except Exception as e:
                 logging.info(f'Error connecting to Kafka: {str(e)}')
                 print('Error connecting to Kafka, Retrying in 1 second...')
@@ -93,9 +110,13 @@ class kafka_manager:
                 logging.info(f'Error connecting to Kafka: {str(e)}')
                 print('Error connecting to Kafka, Retrying in 1 second...')
                 time.sleep(1)
+
     def is_connected(self):
         return self.producer is not None
 
+
 if __name__ == '__main__':
+    from kafka_info import HOST, PORT
+
     kfk = kafka_manager()
     kfk.test_send(message='test')
