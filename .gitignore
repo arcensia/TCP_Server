@@ -1,15 +1,15 @@
 # pyCharm
 .idea/
+.spec
 
 # pyinstaller
 build/
 dist/
 venv/
 
-
 DB/
 #DB/DB_info.py
 TCP/protocol.py
 kafka_manager/kafka_info.py
-
+log/
 config.yml
