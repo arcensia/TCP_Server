@@ -5,8 +5,7 @@
 # pyinstaller
 build/
 dist/
-venv/
-
+.venv/
 DB/
 #DB/DB_info.py
 TCP/protocol.py
