@@ -1,5 +1,5 @@
 from confluent_kafka import Producer
-from kafka_manager.kafka_info import HOST, PORT
+# from kafka_manager.kafka_info import HOST, PORT
 import logging
 import time
 
@@ -14,7 +14,7 @@ kafka_manager 메시지 전송 전략
     - TCP_Server에 연결된 Client리스트 연결 상태 전송
 """
 
-KAFKA_SERVER = HOST + ":" + str(PORT)
+# KAFKA_SERVER = HOST + ":" + str(PORT)
 
 
 class kafka_manager:
@@ -29,7 +29,9 @@ class kafka_manager:
         #             'retries': 3,  # 메시지 전송 재시도 횟수
         #             'retry.backoff.ms': 100  # 재시도 간격 (밀리초)
         #         })
-        self.producer = self.connect_to_kafka_broker(KAFKA_SERVER)
+
+        self.producer = self.connect_to_kafka_broker("localhost:19092")
+        # self.producer = self.connect_to_kafka_broker(KAFKA_SERVER)
 
     def delivery_report(self, err, msg):
         """
@@ -71,7 +73,7 @@ class kafka_manager:
             try:
                 # 카프카 프로듀서 초기화
                 producer = Producer({
-                    'bootstrap.servers': bootstrap_servers,# 카프카 서버 주소
+                    'bootstrap.servers': bootstrap_servers, # 카프카 서버 주소
                     'client.id': 'python-client_flask_server'
                     # 'client.id': 'python-producer'
 
