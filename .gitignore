@@ -1,6 +1,6 @@
 # pyCharm
 .idea/
-.spec
+*.spec
 
 # pyinstaller
 build/
